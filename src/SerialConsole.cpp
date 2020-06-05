@@ -1,5 +1,27 @@
 #include "Arduino.h"
 #include "SerialConsole.hpp"
+#include <avr/pgmspace.h>
+
+void print_P(Stream& serial,const char *msg)
+{
+  char c[11];
+  unsigned char cnt = 0;
+  while(1)
+  {
+    c[cnt] = pgm_read_byte_near(msg);
+    if(c[cnt] == 0){
+      serial.print(c);
+      break;
+    }
+    ++msg;
+    ++cnt;
+    if(cnt >= sizeof(c)){
+      c[cnt] = 0;
+      serial.print(c);
+      cnt = 0;
+    }
+  }
+}
 
 SerialConsole::SerialConsole(Stream&_serial, byte _bufferSize, const char*_promt):
   serial(_serial),bufferSize(_bufferSize),promt(_promt),requiredProcess(false),bufferPos(0)
@@ -8,7 +30,7 @@ SerialConsole::SerialConsole(Stream&_serial, byte _bufferSize, const char*_promt
   buffer2 = (char*)malloc(bufferSize);
   if((buffer1 == NULL) || (buffer2 == NULL))
   {
-  	serial.println("Shit happens: out of memory");
+    print_P(serial,"Shit happens: out of memory\n");
   }
   serial.print(promt);
 }
@@ -54,11 +76,11 @@ void SerialConsole::nextChar()
       // pressing Enter on remote machine results in capturing received command in buffer2 and raising requiredProcess flag
       serial.print("\n\r");
       if(buffer2 != NULL){
-	      for(byte b = 0; b < bufferPos; ++b)
+        for(byte b = 0; b < bufferPos; ++b)
         {
-	        buffer2[b]=buffer1[b];
+          buffer2[b]=buffer1[b];
         }
-	      buffer2[bufferPos]=0;
+        buffer2[bufferPos]=0;
       }
       bufferPos = 0;
       requiredProcess = true;
@@ -68,7 +90,7 @@ void SerialConsole::nextChar()
       // received from serial port printable data captured into buffer1 (if it's large amount)
       if(buffer1 != NULL)
       {
-	      buffer1[bufferPos++] = (char)inChar;
+        buffer1[bufferPos++] = (char)inChar;
       }
       // echoing
       serial.print((char)inChar);

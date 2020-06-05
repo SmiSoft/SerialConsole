@@ -2,6 +2,7 @@
 #define COMCONSOLE_HPP_GUARD
 
 boolean isPrintable(char ch);
+void print_P(Stream& serial,const char *msg);
 
 class SerialConsole
 {
