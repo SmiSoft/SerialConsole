@@ -12,6 +12,9 @@ Because, in dialogs there can be much strings, I recommend to print them from fl
 	{
 	  // init Serial port (or Serial1, Serial2 etc)
 	  Serial.begin(9600);
+	  // prevent Timers from running, this disables some Arduino functions, like delay, but improve power efficiency
+	  PRR |= _BV(PRTIM2) | _BV(PRTIM1) | _BV(PRTIM0) | _BV(PRADC);
+	  sleep_enable();
 	}
 
 	void loop()
@@ -37,9 +40,7 @@ Because, in dialogs there can be much strings, I recommend to print them from fl
 	    // type promt for user, indicating, that command has been processed
 	    serialConsole.done();
 	  }
-	  // sleep and wait for next interrupt (optional, but the more sleep, the better)
-	  MCUCR=(MCUCR & 0B00001111) | 0B10000000; // idle
-	  asm("sleep");
+	  sleep_cpu();
 	}
 
 	// translate received character to comConsole for processing
@@ -62,6 +63,9 @@ Because, in dialogs there can be much strings, I recommend to print them from fl
 	{
 	  // init Serial port (or Serial1, Serial2 etc)
 	  Serial.begin(9600);
+	  // prevent Timers from running, this disables some Arduino functions, like delay, but improve power efficiency
+	  PRR |= _BV(PRTIM2) | _BV(PRTIM1) | _BV(PRTIM0) | _BV(PRADC);
+	  sleep_enable();
 	}
 
 	void loop()
@@ -86,9 +90,7 @@ Because, in dialogs there can be much strings, I recommend to print them from fl
 	    // type promt for user, indicating, that command has been processed
 	    serialConsole.done();
 	  }
-	  // sleep and wait for next interrupt (optional, but the more sleep, the better)
-	  MCUCR=(MCUCR & 0B00001111) | 0B10000000; // idle
-	  asm("sleep");
+	  sleep_cpu();
 	}
 	
 	void serialEvent()

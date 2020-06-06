@@ -4,7 +4,7 @@
 
 void print_P(Stream& serial,const char *msg)
 {
-  char c[11];
+  static char c[11];
   unsigned char cnt = 0;
   while(1)
   {
